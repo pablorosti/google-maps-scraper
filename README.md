@@ -672,6 +672,8 @@ When `-pages-per-browser` is greater than 1, the scraper opens multiple tabs wit
 
 `leadsgen` scrapes a whole Argentine province rubro by rubro (business categories modeled on dir.ar) and resumes automatically after crashes or restarts. Localities come from the official [Georef API](https://apis.datos.gob.ar/georef); big cities are also swept with a grid.
 
+**Full guide in Spanish: [LEADS.md](LEADS.md)** (setup, commands, recovery, output columns, proxies).
+
 ```bash
 ./leads.sh iniciar cordoba 100000        # start: province, total leads spread across all rubros
 ./leads.sh iniciar cordoba 100000 5000   # fill rubros in order, up to 5000 each
