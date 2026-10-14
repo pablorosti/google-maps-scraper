@@ -24,8 +24,47 @@ Para que el scrapeo no se corte durante días:
 | Qué | Cómo |
 |-----|------|
 | Docker arranca solo | Docker Desktop → Settings → General → activar **"Start Docker Desktop when you sign in"** |
-| La Mac no se duerme | Automático: `iniciar` y `reanudar` mantienen la Mac despierta mientras corre (`caffeinate`). Después de reiniciar la Mac, ejecutar `./leads.sh reanudar <provincia>` para reactivarlo |
+| La computadora no se duerme | Mac: automático (ver abajo). Windows: configuración manual (ver abajo) |
 | Espacio en disco | Calcular ~9 KB por lead en los datos internos: unos 4 GB cada 400.000 leads |
+
+### Mac
+
+`iniciar` y `reanudar` mantienen la Mac despierta mientras corre el scrapeo (`caffeinate`), y `parar` lo desactiva. Después de reiniciar la Mac, ejecutar `./leads.sh reanudar <provincia>` para reactivarlo.
+
+### Windows
+
+En Windows, `leads.sh` no mantiene la PC despierta por sí solo. Hay que configurarlo una vez con cualquiera de estas opciones.
+
+**Opción A: PowerToys Awake (la más simple).** Instalar [Microsoft PowerToys](https://learn.microsoft.com/windows/powertoys/), abrir **Awake** y elegir **"Keep awake indefinitely"**. Funciona igual que `caffeinate`: se activa y desactiva desde el ícono de la bandeja del sistema.
+
+**Opción B: desactivar la suspensión con `powercfg`.** En una terminal de PowerShell o CMD como administrador:
+
+```powershell
+# No suspender ni hibernar mientras está enchufada (0 = nunca)
+powercfg /change standby-timeout-ac 0
+powercfg /change hibernate-timeout-ac 0
+
+# Notebook: no suspender al cerrar la tapa estando enchufada
+powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS LIDACTION 0
+powercfg /setactive SCHEME_CURRENT
+```
+
+Para volver a la configuración habitual al terminar (por ejemplo, suspender a los 30 minutos):
+
+```powershell
+powercfg /change standby-timeout-ac 30
+powercfg /change hibernate-timeout-ac 60
+powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS LIDACTION 1
+powercfg /setactive SCHEME_CURRENT
+```
+
+**Opción C: desde la configuración.** Configuración → Sistema → Energía y batería → Pantalla y suspensión → "Cuando esté enchufado, poner el dispositivo en suspensión después de" → **Nunca**.
+
+Además, en Windows conviene tener en cuenta:
+
+- **Windows Update reinicia la PC.** Pausar las actualizaciones mientras dura el scrapeo (Configuración → Windows Update → Pausar actualizaciones). Si igual se reinicia, Docker Desktop vuelve a levantar el contenedor y el scrapeo retoma solo, siempre que Docker esté configurado para arrancar al iniciar sesión.
+- **Dónde ejecutar `leads.sh`:** desde una terminal de WSL (Ubuntu) o Git Bash, con Docker Desktop usando WSL 2. Los comandos son los mismos que en Mac.
+- **Batería:** en una notebook, dejarla siempre enchufada. Las opciones anteriores solo evitan la suspensión con el cargador conectado.
 
 ## Comandos
 
