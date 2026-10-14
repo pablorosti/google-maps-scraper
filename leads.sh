@@ -198,7 +198,8 @@ case "${1:-}" in
     fi
     report="$OUT/$(canon "$prov")/PROGRESO.txt"
     if [[ -f "$report" ]]; then
-      age=$(( $(date +%s) - $(stat -f %m "$report" 2>/dev/null || stat -c %Y "$report") ))
+      if [[ "$(uname)" == "Darwin" ]]; then mtime=$(stat -f %m "$report"); else mtime=$(stat -c %Y "$report"); fi
+      age=$(( $(date +%s) - mtime ))
       echo "== Último avance guardado: hace $((age / 60)) min"
       if (( age > 3 * 3600 )); then
         echo "   Más de 3 h sin avance. Probá: ./leads.sh reiniciar $prov (y si sigue igual: ./leads.sh reparar $prov)"
