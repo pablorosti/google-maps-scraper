@@ -668,6 +668,28 @@ When `-pages-per-browser` is greater than 1, the scraper opens multiple tabs wit
 
 ---
 
+## Province Lead Scraping (Argentina)
+
+`leadsgen` scrapes a whole Argentine province rubro by rubro (business categories modeled on dir.ar) and resumes automatically after crashes or restarts. Localities come from the official [Georef API](https://apis.datos.gob.ar/georef); big cities are also swept with a grid.
+
+```bash
+./leads.sh iniciar cordoba 100000        # start: province, total leads spread across all rubros
+./leads.sh iniciar cordoba 100000 5000   # fill rubros in order, up to 5000 each
+./leads.sh estado cordoba                # progress
+./leads.sh logs cordoba                  # follow logs
+./leads.sh parar cordoba                 # stop; progress is kept
+./leads.sh reanudar cordoba              # resume with the saved settings
+./leads.sh reiniciar cordoba             # restart the container
+./leads.sh reparar cordoba               # rebuild the image and recreate the container
+./leads.sh exportar cordoba              # regenerate the rubro CSVs from the scraped data
+./leads.sh diagnostico cordoba           # Docker, container, disk and recent warnings
+./leads.sh rubros                        # list rubro slugs
+```
+
+Without a per-rubro cap, the total is split evenly across every rubro; rubros that run out of businesses keep what they found and their unused share goes to the rest. It runs in Docker (`docker-compose.leads.yml`, `restart: unless-stopped`) and always extracts emails. Output goes to `leads-output/<provincia>/<rubro>.csv` (UTF-8 with BOM, `;` separated, ready for Excel) with 22 columns: general `rubro`, `whatsapp` and `link_whatsapp` for Argentine mobiles (numbers written with "15" after the area code), Instagram and Facebook split from the website, and the official Georef `localidad` and `partido` of each business (matched by Google city name, or the nearest locality within 50 km), and progress to `leads-output/<provincia>/PROGRESO.txt`. When a run finds nothing new (Google throttling or no internet) it pauses 10 minutes, doubling up to 2 hours, and resumes. Proxies: put one proxy URL per line in `leads-output/proxies.txt`. Quote names with spaces (`./leads.sh iniciar "buenos aires" 100000`); CABA aliases (`caba`, `"capital federal"`, ...) share `leads-output/caba`. `buenos aires` covers the whole province plus CABA in the same rubro files (CABA barrios first, then the 1 km grids of CABA and the north, west and south conurbano). Optional env vars for `iniciar`: `RUBROS`, `CONCURRENCY`.
+
+---
+
 ## Export to LeadsDB
 
 Skip the CSV files and send leads directly to a managed database. [LeadsDB](https://getleadsdb.com/) handles deduplication, filtering, and provides an API for your applications.

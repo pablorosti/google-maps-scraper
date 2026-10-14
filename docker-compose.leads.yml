@@ -1,0 +1,32 @@
+# Long-running province lead scrape. Start it with ./leads.sh, which sets
+# PROVINCIA, TOTAL and POR_RUBRO. Progress lives in ./leads-output, so the
+# container can be restarted or recreated at any time and it resumes.
+services:
+  leadsgen:
+    build: .
+    image: google-maps-scraper-leads
+    entrypoint: ["leadsgen"]
+    command:
+      - "-provincia=${PROVINCIA:?set PROVINCIA}"
+      - "-total=${TOTAL:-100000}"
+      - "-por-rubro=${POR_RUBRO:-0}"
+      - "-rubros=${RUBROS:-}"
+      - "-c=${CONCURRENCY:-4}"
+      - "-proxies-file=${PROXIES_FILE:-}"
+      - "-out=/data"
+      - "-carpeta=${CARPETA:-}"
+      - "-wait-when-done"
+    volumes:
+      - ./leads-output:/data
+    environment:
+      DISABLE_TELEMETRY: "1"
+    # Restart after crashes, OOM kills, Docker restarts and host reboots.
+    restart: unless-stopped
+    # Reap orphaned Chromium processes.
+    init: true
+    shm_size: "2gb"
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
