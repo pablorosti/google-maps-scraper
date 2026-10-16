@@ -17,7 +17,7 @@
 # Names with spaces go in quotes: ./leads.sh iniciar "buenos aires" 100000.
 # CABA aliases (caba, "capital federal", ...) all share leads-output/caba.
 # Optional env vars for iniciar: RUBROS (comma-separated slugs), CONCURRENCY
-# (default 4). Proxies: put one proxy URL per line in leads-output/proxies.txt
+# (default 4). MEM_LIMIT caps the container's RAM (default 6g). Proxies: put one proxy URL per line in leads-output/proxies.txt
 # and they are used automatically.
 set -euo pipefail
 

@@ -25,6 +25,14 @@ services:
     # Reap orphaned Chromium processes.
     init: true
     shm_size: "2gb"
+    # Chromium crashes are expected and recovered from; don't let each one
+    # dump a 1GB+ core into %TEMP%\wsl-crashes on the Windows host.
+    ulimits:
+      core: 0
+    # Cap RAM so leaking Chromium gets this container OOM-killed (and restarted,
+    # resuming) instead of freezing the whole Docker/WSL VM.
+    mem_limit: "${MEM_LIMIT:-6g}"
+    memswap_limit: "${MEM_LIMIT:-6g}"
     logging:
       driver: json-file
       options:
