@@ -25,6 +25,12 @@ services:
     # Reap orphaned Chromium processes.
     init: true
     shm_size: "2gb"
+    # Chromium keeps its profile and disk cache in /tmp and rewrites them
+    # constantly (GBs per hour). On disk that churn grows Docker's virtual disk
+    # file on the host, which never shrinks, until the host disk is full; in
+    # RAM it costs nothing.
+    tmpfs:
+      - /tmp:size=1g,mode=1777
     # Cap RAM so leaking Chromium gets this container OOM-killed (and restarted,
     # resuming) instead of freezing the whole Docker/WSL VM.
     mem_limit: "${MEM_LIMIT:-6g}"
