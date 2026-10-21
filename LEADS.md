@@ -153,7 +153,7 @@ Los CSV usan `;` como separador y codificación UTF-8 con BOM, así que se abren
 | `nombre` | Nombre del negocio |
 | `rubro` | Rubro general del catálogo (por ejemplo, "Gastronomía") |
 | `rubro_google` | Categoría de Google (por ejemplo, "Pizzería") |
-| `telefono` | Teléfono tal como figura en Google |
+| `telefono` | Teléfono tal como figura en Google (los negocios sin teléfono no se exportan) |
 | `whatsapp` | Celular en formato internacional (`5493513254578`) |
 | `link_whatsapp` | Link directo al chat (`https://wa.me/...`) |
 | `emails` | Emails encontrados en la web del negocio |

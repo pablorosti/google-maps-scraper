@@ -84,12 +84,16 @@ func TestLeadSetFiltersAndExports(t *testing.T) {
 	mobile := entry("p1", "Bar Uno", "Córdoba")
 	mobile.Phone = "0351 15-325-4578"
 
+	noPhone := entry("p5", "Bar sin telefono", "Córdoba")
+	noPhone.Phone = ""
+
 	writeRaw(t, raw, []*gmaps.Entry{
 		mobile,
 		entry("p1", "Bar Uno dup", "Córdoba"),
 		entry("p2", "Bar Santa Fe", "Santa Fe"),
 		entry("p3", "Bar sin provincia", ""),
 		closedEntry("p4"),
+		noPhone,
 	})
 
 	// Simulate a scraper killed mid-write.

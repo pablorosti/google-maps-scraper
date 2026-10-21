@@ -116,7 +116,8 @@ func (s *LeadSet) Len() int {
 	return len(s.Leads)
 }
 
-// AddFile reads a raw scraper CSV and adds its valid, unseen leads. A missing
+// AddFile reads a raw scraper CSV and adds its valid, unseen leads (those
+// with a phone number). A missing
 // file adds nothing, and a truncated trailing record (from a killed scraper)
 // is ignored.
 func (s *LeadSet) AddFile(path string) error {
@@ -166,7 +167,8 @@ func (s *LeadSet) AddFile(path string) error {
 
 func (s *LeadSet) add(l *Lead) {
 	key := firstNonEmpty(l.PlaceID, l.MapsURL)
-	if l.Name == "" || key == "" || s.seen[key] {
+	// The phone is what makes a lead sellable, so businesses without one are skipped.
+	if l.Name == "" || l.Phone == "" || key == "" || s.seen[key] {
 		return
 	}
 
