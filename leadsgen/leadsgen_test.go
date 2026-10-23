@@ -584,6 +584,34 @@ func TestOrchestratorReopensPhasesStoppedByOldTargets(t *testing.T) {
 	}
 }
 
+func TestOrchestratorSettlesRubroLeftRunning(t *testing.T) {
+	dir := t.TempDir()
+	cfg := testConfig(dir, testRubros()[:1])
+	cfg.TotalTarget, cfg.PerRubroTarget = 6, 0
+
+	// State left by a run cut short mid-rubro after the total was already met.
+	old := &State{Rubros: map[string]*RubroState{}}
+	rs := old.Rubro(testRubros()[0])
+	rs.Status, rs.Leads, rs.Target = StatusRunning, 6, 8
+
+	stateDir := filepath.Join(dir, "cordoba", ".state")
+	if err := old.Save(filepath.Join(stateDir, "state.json"), filepath.Join(dir, "cordoba", "PROGRESO.txt")); err != nil {
+		t.Fatal(err)
+	}
+
+	scraper := &fakeScraper{perRun: 3}
+	orch := NewOrchestrator(&cfg, scraper, fakeGeo{})
+	orch.logf = t.Logf
+
+	if err := orch.Run(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+
+	if got := orch.state.Rubros["gastronomia"].Status; !orch.state.Done || got != StatusPaused || scraper.calls != 0 {
+		t.Fatalf("done = %v, status = %q, calls = %d; want done, paused, no scraping", orch.state.Done, got, scraper.calls)
+	}
+}
+
 func TestExportRewritesCSVsWithoutScraping(t *testing.T) {
 	dir := t.TempDir()
 	cfg := testConfig(dir, testRubros())

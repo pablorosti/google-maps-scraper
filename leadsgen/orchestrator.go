@@ -116,6 +116,14 @@ func (o *Orchestrator) Run(ctx context.Context) error {
 		return err
 	}
 
+	// A run cut short mid-rubro leaves it "running"; if the total was met on
+	// restart, that rubro is never touched again, so settle it here.
+	for _, rs := range o.state.Rubros {
+		if rs.Status == StatusRunning {
+			rs.Status = StatusPaused
+		}
+	}
+
 	o.state.Done = true
 	if err := o.save(); err != nil {
 		return err
