@@ -33,8 +33,8 @@ services:
       - /tmp:size=1g,mode=1777
     # Cap RAM so leaking Chromium gets this container OOM-killed (and restarted,
     # resuming) instead of freezing the whole Docker/WSL VM.
-    mem_limit: "${MEM_LIMIT:-6g}"
-    memswap_limit: "${MEM_LIMIT:-6g}"
+    mem_limit: "${MEM_LIMIT:-8g}"
+    memswap_limit: "${MEM_LIMIT:-8g}"
     logging:
       driver: json-file
       options:
